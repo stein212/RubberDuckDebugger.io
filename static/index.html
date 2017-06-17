@@ -12,10 +12,9 @@
     <input id="msgBox" type="text" name="msgBox" placeholder="Type ur messages here">
     <button id="sendBtn">Send</button>
     <div id="chatbox"></div>
-    <video id="vid" width="260" height="200" controls></video>
+    <video id="vid" width="260" height="200" controls autoplay></video>
     <button id="callBtn">Call</button>
-    <!-- <audio id="aud" controls autoplay></audio> -->
-    <script src="https://cdn.WebRTC-Experiment.com/getScreenId.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.14/peer.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type="text/javascript">
@@ -29,7 +28,6 @@
     var sendBtn = $('#sendBtn');
     var vid = $('#vid');
     var callBtn = $('#callBtn');
-    var aud = $('#aud');
     var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia).bind(navigator);
     var peer = new Peer({
         key: '61if3wqg464unmi'
@@ -38,43 +36,6 @@
     function sendMsg(msg) {
         conn.send(msg);
         chatbox.append(`<p>${msg}</p>`);
-    }
-
-    function useScreenId(error, sourceId, screen_constraints) {
-        // error    == null || 'permission-denied' || 'not-installed' || 'installed-disabled' || 'not-chrome'
-        // sourceId == null || 'string' || 'firefox'
-
-        if (sourceId && sourceId != 'firefox') {
-            screen_constraints = {
-                video: {
-                    mandatory: {
-                        chromeMediaSource: 'screen',
-                        maxWidth: 1920,
-                        maxHeight: 1080,
-                        minAspectRatio: 1.77
-                    }
-                }
-            };
-
-            if (error === 'permission-denied') return alert('Permission is denied.');
-            if (error === 'not-chrome') return alert('Please use chrome.');
-
-            if (!error && sourceId) {
-                screen_constraints.video.mandatory.chromeMediaSource = 'desktop';
-                screen_constraints.video.mandatory.chromeMediaSourceId = sourceId;
-            }
-        }
-
-        navigator.getUserMedia = navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
-        navigator.getUserMedia(screen_constraints, function(stream) {
-            vid.prop('src', URL.createObjectURL(stream));
-
-            // share this "MediaStream" object using RTCPeerConnection API
-        }, function(error) {
-            console.error('getScreenId error', error);
-
-            alert('Failed to capture your screen. Please check Chrome console logs for further information.');
-        });
     }
 
     connectBtn.on('click', function connectToPeer(e) {
@@ -103,16 +64,12 @@
 
     peer.on('call', function(call) {
         getUserMedia({
-            video: {
-                mandatory: {
-                    chromeMediaSource: 'screen'
-                }
-            },
+            video: true,
             audio: true
         }, function(stream) {
             call.answer(stream); // Answer the call with an A/V stream.
             call.on('stream', function(remoteStream) {
-                getScreenId(useScreenId);
+                vid.prop('src', URL.createObjectURL(remoteStream));
             });
         }, function(err) {
             console.log('Failed to get local stream', err);
@@ -139,7 +96,7 @@
         }, function(stream) {
             var call = peer.call(otherPeerId, stream);
             call.on('stream', function(remoteStream) {
-                getScreenId(useScreenId);
+                vid.prop('src', URL.createObjectURL(remoteStream));
             });
         }, function(err) {
             console.log('Failed to get local stream', err);
