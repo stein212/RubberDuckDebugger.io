@@ -31,7 +31,7 @@
     var vid = $('#vid');
     var callBtn = $('#callBtn');
     var aud = $('#aud');
-    var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia).bind(navigator);
+    var getUserMedia = (navigator.mediaDevices.getUserMedia || navigator.mediaDevices.webkitGetUserMedia || navigator.mediaDevices.mozGetUserMedia).bind(navigator.mediaDevices);
     var peer = new Peer({
         key: '61if3wqg464unmi'
     });
@@ -69,7 +69,7 @@
         getUserMedia({
             video: {
                 mandatory: {
-                    mediaStreamSource: {exact: ['desktop']}
+                    chromeMediaSource: 'desktop'
                 }
             },
             audio: true
