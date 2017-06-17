@@ -2,44 +2,36 @@
 <html lang="en">
 
 <head>
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-
     <title>Rubberduck Debugger</title>
-
     <!-- Bootstrap Core CSS -->
     <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-
     <!-- Custom Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Muli" rel="stylesheet">
-
     <!-- Plugin CSS -->
     <link rel="stylesheet" href="lib/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="lib/simple-line-icons/css/simple-line-icons.css">
     <link rel="stylesheet" href="lib/device-mockups/device-mockups.min.css">
-
     <!-- Theme CSS -->
     <link href="css/new-age.css" rel="stylesheet">
     <link href="css/chat.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
 
+    <link href="css/style.css" rel="stylesheet">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-
 </head>
 
 <body id="page-top">
-
 <div class="loader_wrapper"><div class="loader"></div>
         <div class="loader_text">
         Searching for fellow ducks...
@@ -57,7 +49,6 @@
         </div>
         <!-- /.container-fluid -->
     </nav>
-
     <header>
         <div class="container">
             <div class="row">
@@ -70,15 +61,33 @@
                             <a href="./session_view.html" class="btn btn-outline btn-xl page-scroll">I solved it</a>
                             <a href="./session_view.html" class="btn btn-outline btn-xl page-scroll">Find New Rubberduck</a>
                             <button id="btn_mute"><i class="icon-microphone"></i></button>
-
                         </div>
                     </div>
                 </div>
-
                 <div class="col-sm-4">
                     <div class="header-content">
                         <div class="chat_wrapper">
-                            <div class="chat_window"><div class="top_menu"><div class="title">Chat</div></div><ul class="messages"></ul><div class="bottom_wrapper clearfix"><div class="message_input_wrapper"><input class="message_input" placeholder="Type a message..." /></div><div class="send_message"><div class="text">Send</div></div></div></div><div class="message_template"><li class="message"><div class="avatar"></div><div class="text_wrapper"><div class="text"></div></div></li>
+                            <div class="chat_window">
+                                <div class="top_menu">
+                                    <div class="title">Chat</div>
+                                </div>
+                                <ul class="messages"></ul>
+                                <div class="bottom_wrapper clearfix">
+                                    <div class="message_input_wrapper">
+                                        <input class="message_input" placeholder="Type a message..." />
+                                    </div>
+                                    <div id="sendBtn" class="send_message">
+                                        <div class="text">Send</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="message_template">
+                                <li class="message">
+                                    <div class="avatar"></div>
+                                    <div class="text_wrapper">
+                                        <div class="text"></div>
+                                    </div>
+                                </li>
                             </div>
                         </div>
                     </div>
@@ -86,20 +95,107 @@
             </div>
         </div>
     </header>
-
     <!-- jQuery -->
     <script src="lib/jquery/jquery.min.js"></script>
-
     <!-- Bootstrap Core JavaScript -->
     <script src="lib/bootstrap/js/bootstrap.min.js"></script>
-
     <!-- Plugin JavaScript -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
-
     <!-- Theme JavaScript -->
     <script src="js/new-age.min.js"></script>
-
     <script src="js/chat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.14/peer.min.js"></script>
+    <!-- <script src="js/screen-capturing.js"></script> -->
+    <script type="text/javascript">
+        var otherPeerId;
+        var _conn;
+        // var peerIdLbl = $('#peerIdLbl');
+        // var otherPeerTb = $('#otherPeerTb');
+        var connectBtn = $('#connectBtn');
+        var msgBox = $('.message_input');
+        var chatbox = $('#chatbox');
+        var sendBtn = $('.send_message');
+        var vid = $('video');
+        // var callBtn = $('#callBtn');
+        var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia).bind(navigator);
+        var peer = new Peer({key: '61if3wqg464unmi'});
+
+        function sendMsgToPeer(msg) {
+            console.log('sending');
+            _conn.send(msg);
+            sendMessage(msg, 'right');
+        }
+
+        function connectToPeer(otherPeerId) {
+            console.log('connect to ' + otherPeerId);
+            _conn = peer.connect(otherPeerId);
+            callPeer(otherPeerId);
+            // if () { // call other peer if receiving help
+            // callPeer(otherPeerId);
+            // }
+        }
+
+        function callPeer(otherPeerId) {
+            getUserMedia({
+                video: true,
+                audio: true
+            }, function(outgoingStream) {
+                var call = peer.call(otherPeerId, outgoingStream);
+                call.on('stream', function(incomingStream) {
+                    vid.prop('src', URL.createObjectURL(incomingStream));
+                });
+            }, function(err) {
+                console.log('Failed to get local stream', err);
+            });
+        }
+
+        // Handlers
+        msgBox.on('keydown', function msgBoxEnter(e) {
+            // Enter is pressed
+            if (e.keyCode == 13) {
+                sendBtn.click();
+            }
+        });
+
+        sendBtn.on('click', function onClick() {
+            sendMsgToPeer(msgBox.val());
+        })
+
+        peer.on('open', function onConnectToPeerServer(id) {
+            console.log(id);
+            // peerIdLbl.text(id);
+
+            // send id to server to wait for matching
+        });
+
+        peer.on('connection', function onConnectionFromPeer(conn) {
+            if (_conn == null) {
+                console.log(conn.peer);
+                otherPeerId = conn.peer;
+                _conn = peer.connect(conn.peer);
+            }
+            conn.on('open', function() {
+                // Receive messages
+                conn.on('data', function(msg) {
+                    sendMessage(msg, 'left');
+                });
+            });
+        });
+
+        peer.on('call', function (call) {
+            getUserMedia({
+                video: true,
+                audio: true
+            }, function(outgoingStream) {
+                call.answer(outgoingStream); // Answer the call with an A/V stream.
+                call.on('stream', function(incomingStream) {
+                    vid.prop('src', URL.createObjectURL(incomingStream));
+                });
+            }, function(err) {
+                console.log('Failed to get local stream', err);
+            });
+        });
+    </script>
 </body>
 
 </html>

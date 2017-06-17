@@ -13,7 +13,6 @@ const app = express();
 
 var port = process.env.PORT || 3000
 
-app.use(express.static(__dirname + '/static'));
 app.use(express.static(__dirname + '/Frontend_static_webpage'));
 
 // Initializing the server when server.js is being executed
