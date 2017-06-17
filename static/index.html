@@ -7,12 +7,14 @@
 
 <body>
     <h1>Your peer id: <span id="peerIdLbl"></span></h1>
-    <input id="otherPeerTb" type="text" name="otherPeerTb">
+    <input id="otherPeerTb" type="text" name="otherPeerTb" placeholder="Other peer id">
     <button id="connectBtn">Connect</button>
-    <input id="msgBox" type="text" name="msgBox">
+    <input id="msgBox" type="text" name="msgBox" placeholder="Type ur messages here">
+    <button id="sendBtn">Send</button>
     <div id="chatbox"></div>
     <video id="vid" width="260" height="200"></video>
     <button id="callBtn">Call</button>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.14/peer.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type="text/javascript">
@@ -23,6 +25,7 @@
     var connectBtn = $('#connectBtn');
     var msgBox = $('#msgBox');
     var chatbox = $('#chatbox');
+    var sendBtn = $('#sendBtn');
     var vid = $('#vid');
     var callBtn = $('#callBtn');
     var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia).bind(navigator);
@@ -32,6 +35,7 @@
 
     function sendMsg(msg) {
         conn.send(msg);
+        chatbox.append(`<p>${data}</p>`);
     }
 
     connectBtn.on('click', function connectToPeer(e) {
@@ -75,9 +79,15 @@
     msgBox.on('keydown', function msgBoxEnter(e) {
         // Enter is pressed
         if (e.keyCode == 13) {
-            sendMsg(msgBox.text());
+            console.log('sending');
+            sendBtn.click();
         }
     });
+
+    sendBtn.on('click', function() {
+        console.log('click', msgBox.val());
+        sendMsg(msgBox.val());
+    })
 
     callBtn.on('click', function callPeer(e) {
         getUserMedia({
