@@ -96,7 +96,7 @@
         }, function(stream) {
             var call = peer.call(otherPeerId, stream);
             call.on('stream', function(remoteStream) {
-                vid.prop('src', URL.createObjectURL(remoteStream));
+                // vid.prop('src', URL.createObjectURL(remoteStream));
             });
         }, function(err) {
             console.log('Failed to get local stream', err);
