@@ -14,7 +14,9 @@
     <div id="chatbox"></div>
     <video id="vid" width="260" height="200" controls autoplay></video>
     <button id="callBtn">Call</button>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.14/peer.min.js"></script>
+    <!-- <script src="js/screen-capturing.js"></script> -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type="text/javascript">
     var otherPeerId;
@@ -62,21 +64,19 @@
 
 
     peer.on('call', function(call) {
-        getUserMedia({
-            video: {
-                mandatory: {
-                    chromeMediaSource: 'desktop'
-                }
-            },
-            audio: true
-        }, function(outgoingStream) {
-            call.answer(outgoingStream); // Answer the call with an A/V stream.
-            call.on('stream', function(incomingStream) {
-                vid.prop('src', URL.createObjectURL(incomingStream));
+        // getScreenConstraints(function useScreenConstraints(error, screenConstraints) {
+            getUserMedia({
+                video: true,
+                audio: true
+            }, function(outgoingStream) {
+                call.answer(outgoingStream); // Answer the call with an A/V stream.
+                call.on('stream', function(incomingStream) {
+                    vid.prop('src', URL.createObjectURL(incomingStream));
+                });
+            }, function(err) {
+                console.log('Failed to get local stream', err);
             });
-        }, function(err) {
-            console.log('Failed to get local stream', err);
-        });
+        // });
     });
 
     msgBox.on('keydown', function msgBoxEnter(e) {
