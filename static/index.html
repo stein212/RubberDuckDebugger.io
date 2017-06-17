@@ -35,7 +35,7 @@
 
     function sendMsg(msg) {
         conn.send(msg);
-        chatbox.append(`<p>${data}</p>`);
+        chatbox.append(`<p>${msg}</p>`);
     }
 
     connectBtn.on('click', function connectToPeer(e) {
