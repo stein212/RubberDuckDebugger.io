@@ -20,20 +20,12 @@ http.createServer(app).listen(port, function() {
     console.log('Express server listening on port ' + port);
 });
 
-if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
-        });
-    });
-  // Format the request json
+// Format the request json
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const pair = require("./Queue/pair.js").class;
 
-  app.post("/AddToQueue", function (req, res) {
+app.post("/AddToQueue", function (req, res) {
     console.log(req.body);
     var intent = req.body.intent;
     var id = req.body.id;
@@ -54,9 +46,9 @@ const pair = require("./Queue/pair.js").class;
     // res.end(util.inspect({
     //     fields: pair.GetAPair(intent, id)
     // }));
-  });
+});
 
-  app.get("/GetQueueSize", function (req, res) {
+app.get("/GetQueueSize", function (req, res) {
     var intent = req.query.queue;
     var JSONResult = {};
     var isEmpty = pair[intent].queueStatus();
@@ -65,7 +57,17 @@ const pair = require("./Queue/pair.js").class;
     JSONResult['isQueueEmpty'] = isEmpty;
     JSONResult['count'] = pair[intent].queue.length;
     res.send(JSONResult);
-  });
+});
+
+
+if (app.get('env') === 'development') {
+    app.use(function(err, req, res, next) {
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: err
+        });
+    });
 }
 
 module.exports = app;
