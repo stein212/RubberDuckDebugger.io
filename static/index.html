@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test a</title>
+</head>
+
+<body>
+    <h1>Your peer id: <span id="peerIdLbl"></span></h1>
+    <input id="otherPeerTb" type="text" name="otherPeerTb">
+    <button id="connectBtn">Connect</button>
+    <input id="msgBox" type="text" name="msgBox">
+    <div id="chatbox"></div>
+    <video id="vid" width="260" height="200"></video>
+    <button id="callBtn">Call</button>
+    <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript">
+    var otherPeerId;
+    var conn;
+    var peerIdLbl = $('#peerIdLbl');
+    var otherPeerTb = $('#otherPeerTb');
+    var connectBtn = $('#connectBtn');
+    var msgBox = $('#msgBox');
+    var chatbox = $('#chatbox');
+    var vid = $('#vid');
+    var callBtn = $('#callBtn');
+    var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia).bind(navigator);
+    var peer = new Peer('stein121', {
+        key: '61if3wqg464unmi'
+    });
+
+    function sendMsg(msg) {
+        conn.send(msg);
+    }
+
+    connectBtn.on('click', function connectToPeer(e) {
+        otherPeerId = otherPeerTb.val();
+        conn = peer.connect(otherPeerId);
+        console.log('connect to ' + otherPeerId);
+    });
+
+    peer.on('open', function(id) {
+        console.log(id);
+        peerIdLbl.text(id);
+    });
+
+    peer.on('connection', function(conn) {
+        conn.on('open', function() {
+            // Receive messages
+            conn.on('data', function(data) {
+                chatbox.append(`<p>${data}</p>`);
+            });
+
+            // Send messages
+            conn.send('Hello!');
+        });
+    });
+
+
+    peer.on('call', function(call) {
+        getUserMedia({
+            video: true,
+            audio: true
+        }, function(stream) {
+            call.answer(stream); // Answer the call with an A/V stream.
+            call.on('stream', function(remoteStream) {
+                vid.prop('src', URL.createObjectURL(remoteStream));
+            });
+        }, function(err) {
+            console.log('Failed to get local stream', err);
+        });
+    });
+
+    msgBox.on('keydown', function msgBoxEnter(e) {
+        // Enter is pressed
+        if (e.keyCode == 13) {
+            sendMsg(msgBox.text());
+        }
+    });
+
+    callBtn.on('click', function callPeer(e) {
+        getUserMedia({
+            video: true,
+            audio: true
+        }, function(stream) {
+            var call = peer.call(otherPeerId, stream);
+            call.on('stream', function(remoteStream) {
+                vid.prop('src', URL.createObjectURL(remoteStream));
+            });
+        }, function(err) {
+            console.log('Failed to get local stream', err);
+        });
+    });
+    </script>
+</body>
+
+</html>
