@@ -8,7 +8,7 @@ const app = express();
 
 var port = process.env.PORT || 3000
 
-app.use(express.static(path.join(__dirname, 'static')));
+app.use(express.static(path.join(__dirname, '/static')));
 // app.use(express.errorHandler());
 
 
