@@ -1,0 +1,47 @@
+.loader_wrapper{
+
+	position: absolute;
+	width: 100vw;
+	height: 100vh;
+
+	z-index: 10;
+	background-color: #333333;
+
+	-webkit-transition: opacity 1s; /* Safari */
+    opacity: 1;
+}
+
+.loader {
+
+    width: 120px;
+    height: 120px;
+    position: absolute;
+    top: calc(50% - 100px);
+    left: calc(50% - 60px);
+    background-image: url("./../img/duck.png");
+    background-size:contain;
+    animation: spin 1s linear infinite;
+}
+
+.loader_wrapper .loader_text
+{
+	position: 	absolute;
+	width: 500px;
+    height: 120px;
+    font-size: 1.5em;
+    text-align: center;
+    color: #333;
+    top: calc(50% + 60px);
+    left: calc(50% - 250px);
+    animation: fade 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+@keyframes fade {
+    0% { color: #333333; }
+    50% { color: #eeeeee; }
+    100% { color: #333333; }
+}
