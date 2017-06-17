@@ -20,7 +20,7 @@
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type="text/javascript">
     var otherPeerId;
-    var conn;
+    var _conn;
     var peerIdLbl = $('#peerIdLbl');
     var otherPeerTb = $('#otherPeerTb');
     var connectBtn = $('#connectBtn');
@@ -35,13 +35,13 @@
     });
 
     function sendMsg(msg) {
-        conn.send(msg);
+        _conn.send(msg);
         chatbox.append(`<p>${msg}</p>`);
     }
 
     connectBtn.on('click', function connectToPeer(e) {
         otherPeerId = otherPeerTb.val();
-        conn = peer.connect(otherPeerId);
+        _conn = peer.connect(otherPeerId);
         console.log('connect to ' + otherPeerId);
     });
 
@@ -51,14 +51,16 @@
     });
 
     peer.on('connection', function(conn) {
+        if (_conn == null) {
+            console.log(conn.peer);
+            otherPeerId = conn.peer;
+            _conn = peer.connect(conn.peer);
+        } 
         conn.on('open', function() {
             // Receive messages
             conn.on('data', function(data) {
                 chatbox.append(`<p>${data}</p>`);
             });
-
-            // Send messages
-            conn.send('Hello!');
         });
     });
 
