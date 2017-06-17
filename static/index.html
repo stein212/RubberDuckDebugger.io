@@ -14,7 +14,6 @@
     <div id="chatbox"></div>
     <video id="vid" width="260" height="200" controls autoplay></video>
     <button id="callBtn">Call</button>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.14/peer.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type="text/javascript">
@@ -64,12 +63,16 @@
 
     peer.on('call', function(call) {
         getUserMedia({
-            video: true,
+            video: {
+                mandatory: {
+                    chromeMediaSource: 'screen'
+                }
+            },
             audio: true
-        }, function(stream) {
-            call.answer(stream); // Answer the call with an A/V stream.
-            call.on('stream', function(remoteStream) {
-                vid.prop('src', URL.createObjectURL(remoteStream));
+        }, function(outgoingStream) {
+            call.answer(outgoingStream); // Answer the call with an A/V stream.
+            call.on('stream', function(incomingStream) {
+                vid.prop('src', URL.createObjectURL(incomingStream));
             });
         }, function(err) {
             console.log('Failed to get local stream', err);
@@ -93,10 +96,10 @@
         getUserMedia({
             video: true,
             audio: true
-        }, function(stream) {
-            var call = peer.call(otherPeerId, stream);
-            call.on('stream', function(remoteStream) {
-                // vid.prop('src', URL.createObjectURL(remoteStream));
+        }, function(outgoingStream) {
+            var call = peer.call(otherPeerId, outgoingStream);
+            call.on('stream', function(incomingStream) {
+                // vid.prop('src', URL.createObjectURL(incomingStream));
             });
         }, function(err) {
             console.log('Failed to get local stream', err);
