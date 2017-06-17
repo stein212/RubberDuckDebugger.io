@@ -32,20 +32,19 @@
 
 <body>
 Post
-<form method="post" action="/AddToQueue" enctype="multipart/form-data">
-  <fieldset>
-    <button type="submit" name="intent" value="receive">Receiving Help</button>
-    <button type="submit" name="intent" value="insist">Giving Help</button>
-    Id: <input type="text" name="id">
-  </fieldset>
-</form>
+<!-- <form method="post" action="/AddToQueue" enctype="multipart/form-data">
+  <fieldset> -->
+<!-- <button type="submit" name="intent" value="receive">Receiving Help</button> -->
+<a href="session_view.html?intent=receive">Receive Help</a>
+<!-- <button type="submit" name="intent" value="insist">Giving Help</button> -->
+<a href="session_view.html?intent=insist">Giving Help</a>
+  <!-- </fieldset>
+</form> -->
 
 Get
 <form action="/GetQueueSize" method="get">
   <input type="text" name="queue">
   <input type="submit" value="submit">
 </form>
-
 </body>
-
 </html>

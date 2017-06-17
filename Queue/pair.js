@@ -35,16 +35,15 @@ Pair.class = {
       if(intent === 'receive') {
         message = 'insist is empty: ' + this.insist.queueStatus();
         if(this.insist.queueStatus())
-        return JSON.stringify({isEmpty: true, error: message});
+          return {isEmpty: true, error: message};
         else
-        return JSON.stringify({queue: this.insist.queue, insist_id: this.insist.queue.shift(), insist_queue_size: this.insist.queue.length});
-      }
-      else if(intent === 'insist') {
+          return {queue: this.insist.queue, insist_id: this.insist.queue.shift(), insist_queue_size: this.insist.queue.length};
+      } else if (intent === 'insist') {
         message = 'receive is empty: ' + this.receive.queueStatus();
         if(this.receive.queueStatus())
-        return JSON.stringify({isEmpty: true, error: message});
+          return {isEmpty: true, error: message};
         else
-        return JSON.stringify({queue: this.receive.queue, receive_id: this.receive.queue.shift(), receive_queue_size: this.receive.queue.length});
+          return {queue: this.receive.queue, receive_id: this.receive.queue.shift(), receive_queue_size: this.receive.queue.length};
       }
     }
     return null;
