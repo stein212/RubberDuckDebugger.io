@@ -45,3 +45,34 @@
     50% { color: #eeeeee; }
     100% { color: #540A29; }
 }
+
+#myModal .modal-dialog
+{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(50,50,50,0.8);
+
+    color: white;
+    text-align: center;
+}
+
+#myModal .modal-dialog .modal-content
+{
+    background-color: rgba(50,50,50,0.2);
+}
+
+
+#myModal .modal-dialog .modal-content a
+{
+    width: 200px;
+    padding: 15px;
+    margin: 0 10px;
+}
+
+#myModal h3
+{
+    margin-bottom:  1.5em;
+}
+
