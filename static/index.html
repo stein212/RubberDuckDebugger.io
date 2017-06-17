@@ -7,36 +7,41 @@
 
 <body>
     <h1>Your peer id: <span id="peerIdLbl"></span></h1>
-    <input id="otherPeerTb" type="text" name="otherPeerTb">
+    <input id="otherPeerTb" type="text" name="otherPeerTb" placeholder="Other peer id">
     <button id="connectBtn">Connect</button>
-    <input id="msgBox" type="text" name="msgBox">
+    <input id="msgBox" type="text" name="msgBox" placeholder="Type ur messages here">
+    <button id="sendBtn">Send</button>
     <div id="chatbox"></div>
-    <video id="vid" width="260" height="200"></video>
+    <video id="vid" width="260" height="200" controls autoplay></video>
     <button id="callBtn">Call</button>
-    <script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.14/peer.min.js"></script>
+    <!-- <script src="js/screen-capturing.js"></script> -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script type="text/javascript">
     var otherPeerId;
-    var conn;
+    var _conn;
     var peerIdLbl = $('#peerIdLbl');
     var otherPeerTb = $('#otherPeerTb');
     var connectBtn = $('#connectBtn');
     var msgBox = $('#msgBox');
     var chatbox = $('#chatbox');
+    var sendBtn = $('#sendBtn');
     var vid = $('#vid');
     var callBtn = $('#callBtn');
     var getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia).bind(navigator);
-    var peer = new Peer('stein121', {
+    var peer = new Peer({
         key: '61if3wqg464unmi'
     });
 
     function sendMsg(msg) {
-        conn.send(msg);
+        _conn.send(msg);
+        chatbox.append(`<p>${msg}</p>`);
     }
 
     connectBtn.on('click', function connectToPeer(e) {
         otherPeerId = otherPeerTb.val();
-        conn = peer.connect(otherPeerId);
+        _conn = peer.connect(otherPeerId);
         console.log('connect to ' + otherPeerId);
     });
 
@@ -46,47 +51,57 @@
     });
 
     peer.on('connection', function(conn) {
+        if (_conn == null) {
+            console.log(conn.peer);
+            otherPeerId = conn.peer;
+            _conn = peer.connect(conn.peer);
+        } 
         conn.on('open', function() {
             // Receive messages
             conn.on('data', function(data) {
                 chatbox.append(`<p>${data}</p>`);
             });
-
-            // Send messages
-            conn.send('Hello!');
         });
     });
 
 
     peer.on('call', function(call) {
-        getUserMedia({
-            video: true,
-            audio: true
-        }, function(stream) {
-            call.answer(stream); // Answer the call with an A/V stream.
-            call.on('stream', function(remoteStream) {
-                vid.prop('src', URL.createObjectURL(remoteStream));
+        // getScreenConstraints(function useScreenConstraints(error, screenConstraints) {
+            getUserMedia({
+                video: true,
+                audio: true
+            }, function(outgoingStream) {
+                call.answer(outgoingStream); // Answer the call with an A/V stream.
+                call.on('stream', function(incomingStream) {
+                    vid.prop('src', URL.createObjectURL(incomingStream));
+                });
+            }, function(err) {
+                console.log('Failed to get local stream', err);
             });
-        }, function(err) {
-            console.log('Failed to get local stream', err);
-        });
+        // });
     });
 
     msgBox.on('keydown', function msgBoxEnter(e) {
         // Enter is pressed
         if (e.keyCode == 13) {
-            sendMsg(msgBox.text());
+            console.log('sending');
+            sendBtn.click();
         }
     });
+
+    sendBtn.on('click', function() {
+        console.log('click', msgBox.val());
+        sendMsg(msgBox.val());
+    })
 
     callBtn.on('click', function callPeer(e) {
         getUserMedia({
             video: true,
             audio: true
-        }, function(stream) {
-            var call = peer.call(otherPeerId, stream);
-            call.on('stream', function(remoteStream) {
-                vid.prop('src', URL.createObjectURL(remoteStream));
+        }, function(outgoingStream) {
+            var call = peer.call(otherPeerId, outgoingStream);
+            call.on('stream', function(incomingStream) {
+                // vid.prop('src', URL.createObjectURL(incomingStream));
             });
         }, function(err) {
             console.log('Failed to get local stream', err);
