@@ -37,6 +37,7 @@ const pair = require("./Queue/pair.js").class;
   app.post("/AddToQueue", function (req, res) {
     var fields = {};
     var intent;
+    var id;
     var form = new formidable.IncomingForm();
     // Iteration between the fields that is sent to the backend will be done
     // in the premise in the function.
@@ -55,6 +56,7 @@ const pair = require("./Queue/pair.js").class;
         case 'id': {
           pair[intent].AddToQueue(value);
           fields[field] = value;
+          id = value;
           break;
         }
         default:
@@ -68,7 +70,7 @@ const pair = require("./Queue/pair.js").class;
       });
       res.write('received the data:\n\n');
       res.end(util.inspect({
-          fields: fields
+          fields: pair.GetAPair(intent, id)
       }));
     });
     form.parse(req);
@@ -76,9 +78,13 @@ const pair = require("./Queue/pair.js").class;
 
   app.get("/GetQueueSize", function (req, res) {
     var intent = req.query.queue;
-    console.log(intent);
+    var JSONResult = {};
     var isEmpty = pair[intent].queueStatus();
-    res.send(JSON.stringify({queue_name: intent, isQueueEmpty: isEmpty, count: pair[intent].queue.length}));
+    JSONResult['queue_name'] = intent;
+    JSONResult[intent + '_queue'] = pair[intent].queue;
+    JSONResult['isQueueEmpty'] = isEmpty;
+    JSONResult['count'] = pair[intent].queue.length;
+    res.send(JSONResult);
   });
 }
 
