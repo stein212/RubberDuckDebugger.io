@@ -47,5 +47,9 @@ Pair.class = {
       }
     }
     return null;
+  },
+
+  AddUserBackToIntentQueue: function(intent, id) {
+    this[intent].AddToQueue(id);
   }
 }
