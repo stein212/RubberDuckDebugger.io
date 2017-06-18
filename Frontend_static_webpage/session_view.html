@@ -146,14 +146,7 @@
     function connectToPeer(otherPeerId) {
         console.log('connect to ' + otherPeerId);
         _conn = peer.connect(otherPeerId);
-        setTimeout(function() {
-            console.log('connection ready? ' + _conn.open);
-            if (_conn.open) {
-                callPeer(otherPeerId);
-            } else {
-                pollServerForPeer(peer.id);
-            }
-        }, 10000)
+
 
         // if (querys.intent == 'receive') { // call other peer if receiving help
         //     callPeer(otherPeerId);
@@ -180,10 +173,10 @@
             console.log('Trying to connect to', data.id);
             connectToPeer(data.id);
         } else {
-            // setTimeout(function () { 
-            // console.log('trying to get another peer');
-            // pollServerForPeer(peer.id);
-            // }, 1000);
+            setTimeout(function () { 
+                console.log('trying to get another peer becos list empty');
+                pollServerForPeer(peer.id);
+            }, 3000);
         }
     }
 
@@ -235,21 +228,34 @@
             console.log('connect from ' + conn.peer);
             otherPeerId = conn.peer;
             _conn = peer.connect(conn.peer);
+        } else {
+            callPeer(otherPeerId);
         }
-        conn.on('open', function() {
-            // Receive messages
-            conn.on('data', function(msg) {
-                sendMessage(msg, 'left');
-            });
-
-            // _conn.send('ack: ' + peer.id);
-            $('.loader_wrapper').css('opacity', 0);
-            setTimeout(function() {
-                $('.loader_wrapper').hide();
-            }, 1000);
-            $('#partner_name').html('user ' + peer.id.substring(1, 6));
+        // conn.on('open', function() {
+        // Receive messages
+        conn.on('data', function(msg) {
+            sendMessage(msg, 'left');
         });
+
+        // _conn.send('ack: ' + peer.id);
+        $('.loader_wrapper').css('opacity', 0);
+        setTimeout(function() {
+            $('.loader_wrapper').hide();
+        }, 1000);
+        $('#partner_name').html('user ' + peer.id.substring(1, 6));
+        // });
     });
+
+    peer.on('error', function(err) {
+        console.log(err);
+        if (querys.intent == 'receive') {
+            setTimeout(function() {
+
+                pollServerForPeer(peer.id);
+
+            }, 3000);
+        }
+    })
 
     peer.on('call', function(call) {
         getUserMedia({
