@@ -32,13 +32,13 @@ Pair.class = {
   GetAPair: function(intent, id) {
     var message;
     if(intent != undefined && id != undefined) {
-      this[intent].queue.splice(this[intent.queue.indexOf(id)], 1);
       if(intent === 'receive') {
         message = 'insist is empty: ' + this.insist.queueStatus();
         if(this.insist.queueStatus())
           return {isEmpty: true, error: message};
         else{
           console.log('Paired both receive and insist');
+          this[intent].queue.splice(this[intent].queue.indexOf(id), 1);
           return {queue: this.insist.queue, id: this.insist.queue.shift(), insist_queue_size: this.insist.queue.length};
         }
       } else if (intent === 'insist') {
@@ -47,6 +47,7 @@ Pair.class = {
           return {isEmpty: true, error: message};
         else{
           console.log('Paired both receive and insist');
+          this[intent].queue.splice(this[intent].queue.indexOf(id), 1);
           return {queue: this.receive.queue, id: this.receive.queue.shift(), receive_queue_size: this.receive.queue.length};
         }
       }
