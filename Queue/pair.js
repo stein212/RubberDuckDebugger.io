@@ -37,13 +37,13 @@ Pair.class = {
         if(this.insist.queueStatus())
           return {isEmpty: true, error: message};
         else
-          return {queue: this.insist.queue, insist_id: this.insist.queue.shift(), insist_queue_size: this.insist.queue.length};
+          return {queue: this.insist.queue, id: this.insist.queue.shift(), insist_queue_size: this.insist.queue.length};
       } else if (intent === 'insist') {
         message = 'receive is empty: ' + this.receive.queueStatus();
         if(this.receive.queueStatus())
           return {isEmpty: true, error: message};
         else
-          return {queue: this.receive.queue, receive_id: this.receive.queue.shift(), receive_queue_size: this.receive.queue.length};
+          return {queue: this.receive.queue, id: this.receive.queue.shift(), receive_queue_size: this.receive.queue.length};
       }
     }
     return null;
