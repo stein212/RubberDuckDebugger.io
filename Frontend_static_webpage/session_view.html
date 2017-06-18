@@ -135,7 +135,7 @@
         return vars;
     }
 
-    var querys = getUrlVars();
+    
 
 
     function checkAck() {
@@ -176,7 +176,7 @@
     }
 
     function onResponse(data) {
-        if (data.error == undefined) {
+        if (data != "" && data.error == undefined) {
             connectToPeer(data.id);
             $('.loader_wrapper').css('opacity', 0);
             vid.css('background-color', 'transparent');
@@ -184,7 +184,7 @@
                 $('.loader_wrapper').hide();
             }, 1000);
         } else {
-            setTimeout(pollServerForPeer, 3000);
+            setTimeout(pollServerForPeer, 1000);
         }
     }
 
@@ -216,6 +216,7 @@
         // peerIdLbl.text(id);
 
         // send id to server to wait for matching
+        var querys = getUrlVars();
         pollServerForPeer(id);
     });
 
@@ -224,9 +225,9 @@
             console.log(conn.peer);
             otherPeerId = conn.peer;
             _conn = peer.connect(conn.peer);
-            _conn.send('ack: ' + peer.id);
         }
         conn.on('open', function() {
+            _conn.send('ack: ' + peer.id);
             // Receive messages
             conn.on('data', function(msg) {
                 if (msg == 'ack: ' + otherPeerId) {
