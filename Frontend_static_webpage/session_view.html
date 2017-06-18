@@ -108,7 +108,7 @@
     <!-- <script src="js/screen-capturing.js"></script> -->
     <script type="text/javascript">
     var otherPeerId;
-    var _conn;
+    var _conn = null;
     var querys;
     // var peerIdLbl = $('#peerIdLbl');
     // var otherPeerTb = $('#otherPeerTb');
@@ -170,7 +170,10 @@
         if (data != "" && data.error == undefined) {
             connectToPeer(data.id);
         } else {
-            setTimeout(function () { pollServerForPeer(peer.id); }, 1000);
+            setTimeout(function () { 
+                console.log('trying to get another peer');
+                pollServerForPeer(peer.id);
+            }, 1000);
         }
     }
 
@@ -207,7 +210,7 @@
     });
 
     peer.on('connection', function onConnectionFromPeer(conn) {
-        if (_conn == undefined || _conn.peer == conn.peer) {
+        if (_conn == null || _conn.peer == conn.peer) {
             console.log(conn.peer);
             otherPeerId = conn.peer;
             _conn = peer.connect(conn.peer);
