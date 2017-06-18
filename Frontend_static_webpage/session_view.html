@@ -229,6 +229,7 @@
             otherPeerId = conn.peer;
             _conn = peer.connect(conn.peer);
         } else {
+            console.log('calling ' + otherPeerId);
             callPeer(otherPeerId);
         }
         // conn.on('open', function() {
