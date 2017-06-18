@@ -188,7 +188,7 @@
         }
     }
 
-    function pollServerForPeer() {
+    function pollServerForPeer(id) {
         $.ajax({
             method: "POST",
             url: "/AddToQueue",
@@ -216,7 +216,7 @@
         // peerIdLbl.text(id);
 
         // send id to server to wait for matching
-        pollServerForPeer();
+        pollServerForPeer(id);
     });
 
     peer.on('connection', function onConnectionFromPeer(conn) {
@@ -227,9 +227,6 @@
             _conn.send('ack: ' + peer.id);
         }
         conn.on('open', function() {
-            // send ack
-
-
             // Receive messages
             conn.on('data', function(msg) {
                 if (msg == 'ack: ' + otherPeerId) {
