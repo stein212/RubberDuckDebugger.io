@@ -170,7 +170,7 @@
         if (data != "" && data.error == undefined) {
             connectToPeer(data.id);
         } else {
-            setTimeout(pollServerForPeer, 1000);
+            setTimeout(function () { pollServerForPeer(peer.id); }, 1000);
         }
     }
 
