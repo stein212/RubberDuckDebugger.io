@@ -36,14 +36,18 @@ Pair.class = {
         message = 'insist is empty: ' + this.insist.queueStatus();
         if(this.insist.queueStatus())
           return {isEmpty: true, error: message};
-        else
+        else{
+          console.log('Paired both receive and insist');
           return {queue: this.insist.queue, id: this.insist.queue.shift(), insist_queue_size: this.insist.queue.length};
+        }
       } else if (intent === 'insist') {
         message = 'receive is empty: ' + this.receive.queueStatus();
         if(this.receive.queueStatus())
           return {isEmpty: true, error: message};
-        else
+        else{
+          console.log('Paired both receive and insist');
           return {queue: this.receive.queue, id: this.receive.queue.shift(), receive_queue_size: this.receive.queue.length};
+        }
       }
     }
     return null;

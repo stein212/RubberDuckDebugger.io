@@ -25,27 +25,31 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const pair = require("./Queue/pair.js").class;
 
-app.post("/AddToQueue", function (req, res) {
-    console.log(req.body);
-    var intent = req.body.intent;
-    var id = req.body.id;
-    // var form = new formidable.IncomingForm();
-    // Iteration between the fields that is sent to the backend will be done
-    // in the premise in the function.
-    // form.on('field', function (field, value) {
+function AddToQueueCallback(_callback) {
+  _callback();
+}
 
-    console.log(intent);
-    if (pair[intent].queue.indexOf(id) == -1) {
+app.post("/AddToQueue", function (req, res) {
+  console.log(req.body);
+  var intent = req.body.intent;
+  var id = req.body.id;
+  // var form = new formidable.IncomingForm();
+  // Iteration between the fields that is sent to the backend will be done
+  // in the premise in the function.
+  // form.on('field', function (field, value) {
+  AddToQueueCallback(function() {
+    if (pair[intent].queue.indexOf(id) == -1 && id != undefined) {
+      console.log('Added id: ' + id);
       pair[intent].AddToQueue(id);
     }
-
-    // res.writeHead(200, {
-    //     'content-type': 'application/json'
-    // });
-    res.send(pair.GetAPair(intent, id));
-    // res.end(util.inspect({
-    //     fields: pair.GetAPair(intent, id)
-    // }));
+  });
+  // res.writeHead(200, {
+  //     'content-type': 'application/json'
+  // });
+  res.send(pair.GetAPair(intent, id));
+  // res.end(util.inspect({
+  //     fields: pair.GetAPair(intent, id)
+  // }));
 });
 
 app.get("/GetQueueSize", function (req, res) {
