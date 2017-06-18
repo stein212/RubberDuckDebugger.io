@@ -32,6 +32,7 @@ Pair.class = {
   GetAPair: function(intent, id) {
     var message;
     if(intent != undefined && id != undefined) {
+      this[intent].queue.splice(this[intent.queue.indexOf(id)], 1);
       if(intent === 'receive') {
         message = 'insist is empty: ' + this.insist.queueStatus();
         if(this.insist.queueStatus())
