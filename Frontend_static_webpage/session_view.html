@@ -218,6 +218,7 @@
             setTimeout(function() {
                 $('.loader_wrapper').hide();
             }, 1000);
+            $('#partner_name').html('user ' + peer.id.substring(1, 6));
             // Receive messages
             conn.on('data', function(msg) {
                 if (msg == 'ack: ' + otherPeerId) {
