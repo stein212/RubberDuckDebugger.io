@@ -146,11 +146,18 @@
     function connectToPeer(otherPeerId) {
         console.log('connect to ' + otherPeerId);
         _conn = peer.connect(otherPeerId);
-        callPeer(otherPeerId);
-        var querys = getUrlVars();
-        if (querys.intent == 'receive') { // call other peer if receiving help
-            callPeer(otherPeerId);
-        }
+        setTimeout(function() {
+            console.log('connection ready? ' + _conn.open);
+            if (_conn.open) {
+                callPeer(otherPeerId);
+            } else {
+                pollServerForPeer(peer.id);
+            }
+        }, 3000)
+
+        // if (querys.intent == 'receive') { // call other peer if receiving help
+        //     callPeer(otherPeerId);
+        // }
     }
 
     function callPeer(otherPeerId) {
@@ -168,23 +175,22 @@
     }
 
     function onResponse(data) {
+        console.log(data);
         if (data != "" && data.error == undefined) {
             console.log('Trying to connect to', data.id);
             connectToPeer(data.id);
         } else {
-            if (!ack || !connected) {
-                setTimeout(function () { 
-                    console.log('trying to get another peer');
-                    pollServerForPeer(peer.id);
-                }, 1000);
-            }
+            // setTimeout(function () { 
+            // console.log('trying to get another peer');
+            // pollServerForPeer(peer.id);
+            // }, 1000);
         }
     }
 
     function pollServerForPeer(id) {
         $.ajax({
             method: "POST",
-            url: "/AddToQueue",
+            url: "/Poll",
             data: {
                 intent: querys.intent,
                 id: id
@@ -210,28 +216,32 @@
 
         // send id to server to wait for matching
         querys = getUrlVars();
-        pollServerForPeer(id);
+
+        $.ajax({
+            method: "POST",
+            url: "/AddToQueue",
+            data: {
+                intent: querys.intent,
+                id: id
+            }
+        });
+        if (querys.intent == "receive")
+            pollServerForPeer(id);
     });
 
     peer.on('connection', function onConnectionFromPeer(conn) {
-        connected = true;
-        if (_conn == null || _conn.peer != conn.peer) {
-            console.log(conn.peer);
+        if (querys.intent == 'insist') {
+            console.log('connect from ' + conn.peer);
             otherPeerId = conn.peer;
             _conn = peer.connect(conn.peer);
         }
         conn.on('open', function() {
             // Receive messages
             conn.on('data', function(msg) {
-                if (msg == 'ack: ' + otherPeerId) {
-                    console.log(msg);
-                    ack = true;
-                } else {
-                    sendMessage(msg, 'left');
-                }
+                sendMessage(msg, 'left');
             });
 
-            _conn.send('ack: ' + peer.id);
+            // _conn.send('ack: ' + peer.id);
             $('.loader_wrapper').css('opacity', 0);
             setTimeout(function() {
                 $('.loader_wrapper').hide();

@@ -46,10 +46,15 @@ app.post("/AddToQueue", function (req, res) {
   // res.writeHead(200, {
   //     'content-type': 'application/json'
   // });
-  res.send(pair.GetAPair(intent, id));
   // res.end(util.inspect({
   //     fields: pair.GetAPair(intent, id)
   // }));
+});
+
+app.post('/Poll', function(req, res) {
+	var intent = req.body.intent;
+  	var id = req.body.id;
+	res.send(pair.GetAPair(intent, id));
 });
 
 app.get("/GetQueueSize", function (req, res) {
