@@ -207,7 +207,7 @@
     });
 
     peer.on('connection', function onConnectionFromPeer(conn) {
-        if (_conn == null) {
+        if (_conn.peer == conn.peer) {
             console.log(conn.peer);
             otherPeerId = conn.peer;
             _conn = peer.connect(conn.peer);
