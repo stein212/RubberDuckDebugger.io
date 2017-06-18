@@ -153,7 +153,7 @@
             } else {
                 pollServerForPeer(peer.id);
             }
-        }, 3000)
+        }, 10000)
 
         // if (querys.intent == 'receive') { // call other peer if receiving help
         //     callPeer(otherPeerId);
@@ -188,6 +188,7 @@
     }
 
     function pollServerForPeer(id) {
+        console.log('polling');
         $.ajax({
             method: "POST",
             url: "/Poll",
