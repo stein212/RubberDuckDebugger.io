@@ -136,20 +136,6 @@
         return vars;
     }
 
-
-
-
-    function checkAck() {
-        if (!ack) {
-            pollServerForPeer();
-        } else {
-            $('.loader_wrapper').css('opacity', 0);
-            setTimeout(function() {
-                $('.loader_wrapper').hide();
-            }, 1000);
-        }
-    }
-
     function sendMsgToPeer(msg) {
         console.log('sending');
         _conn.send(msg);
@@ -164,7 +150,6 @@
         if (querys.intent == 'receive') { // call other peer if receiving help
             callPeer(otherPeerId);
         }
-        checkAck();
     }
 
     function callPeer(otherPeerId) {
@@ -229,6 +214,10 @@
         }
         conn.on('open', function() {
             _conn.send('ack: ' + peer.id);
+            $('.loader_wrapper').css('opacity', 0);
+            setTimeout(function() {
+                $('.loader_wrapper').hide();
+            }, 1000);
             // Receive messages
             conn.on('data', function(msg) {
                 if (msg == 'ack: ' + otherPeerId) {
