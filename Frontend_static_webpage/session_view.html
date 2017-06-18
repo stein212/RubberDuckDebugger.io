@@ -123,6 +123,7 @@
         key: 'm4wosbbf5xt7qfr'
     });
     var ack = false;
+    var connected = false;
 
     function getUrlVars() {
         var vars = [],
@@ -168,12 +169,15 @@
 
     function onResponse(data) {
         if (data != "" && data.error == undefined) {
+            console.log('Trying to connect to', data.id);
             connectToPeer(data.id);
         } else {
-            setTimeout(function () { 
-                console.log('trying to get another peer');
-                pollServerForPeer(peer.id);
-            }, 1000);
+            if (!ack || !connected) {
+                setTimeout(function () { 
+                    console.log('trying to get another peer');
+                    pollServerForPeer(peer.id);
+                }, 1000);
+            }
         }
     }
 
@@ -210,18 +214,13 @@
     });
 
     peer.on('connection', function onConnectionFromPeer(conn) {
-        if (_conn == null || _conn.peer == conn.peer) {
+        connected = true;
+        if (_conn == null || _conn.peer != conn.peer) {
             console.log(conn.peer);
             otherPeerId = conn.peer;
             _conn = peer.connect(conn.peer);
         }
         conn.on('open', function() {
-            _conn.send('ack: ' + peer.id);
-            $('.loader_wrapper').css('opacity', 0);
-            setTimeout(function() {
-                $('.loader_wrapper').hide();
-            }, 1000);
-            $('#partner_name').html('user ' + peer.id.substring(1, 6));
             // Receive messages
             conn.on('data', function(msg) {
                 if (msg == 'ack: ' + otherPeerId) {
@@ -231,6 +230,13 @@
                     sendMessage(msg, 'left');
                 }
             });
+
+            _conn.send('ack: ' + peer.id);
+            $('.loader_wrapper').css('opacity', 0);
+            setTimeout(function() {
+                $('.loader_wrapper').hide();
+            }, 1000);
+            $('#partner_name').html('user ' + peer.id.substring(1, 6));
         });
     });
 
