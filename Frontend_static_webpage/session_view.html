@@ -177,7 +177,7 @@
 
     function onResponse(data) {
         if (data.error == undefined) {
-            connectToPeer(data.receive_id);
+            connectToPeer(data.id);
             $('.loader_wrapper').css('opacity', 0);
             vid.css('background-color', 'transparent');
             setTimeout(function() {
